@@ -1,0 +1,6 @@
+index_directory: "./rag_index"
+chunk_size: 1024
+embedding_model: "thenlper/gte-small"
+ollama_model: "tinyllama"
+chroma_collection: "sagemaker_docs"
+documents_dir: "sagemaker_documentation"
