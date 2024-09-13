@@ -36,7 +36,7 @@ def save_query(path: str, query: str, response: dict):
     """
     response["query"] = query
     with open(path, "a", encoding="utf8") as jfile:
-        jfile.write(dumps(response, ensure_ascii=False)+"\n")
+        jfile.write(dumps(response, ensure_ascii=False) + "\n")
 
 
 # load configuration variables
@@ -94,7 +94,7 @@ def retrieve(query: str) -> dict:
     for source_node in response.source_nodes:
         source_files.append(source_node.node.metadata["file_name"])
     source_files = list(set(source_files))
-    result["source_files"] = source files
+    result["source_files"] = source_files
 
     save_query(query_history, query, result)
     return result

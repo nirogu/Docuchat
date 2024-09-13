@@ -91,7 +91,7 @@ def update_index(documents_dir: str, index_dir: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         description="Utility to manage database index with LlamaIndex and Chroma"
     )
     parser.add_argument(
