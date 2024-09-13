@@ -10,6 +10,7 @@ Nicolas Rojas
 import os.path
 import yaml
 from json import dumps
+from pydantic import BaseModel
 from fastapi import FastAPI
 import chromadb
 from llama_index.core import (
@@ -24,6 +25,10 @@ from llama_index.llms.ollama import Ollama
 from database_handler import create_index
 
 
+class Query(BaseModel):
+    query: str
+
+
 def save_query(path: str, query: str, response: dict):
     """Save query in persistent jsonl file.
 
@@ -36,9 +41,10 @@ def save_query(path: str, query: str, response: dict):
     response : dict
         Dictionary with the response and relevant documents.
     """
-    response["query"] = query
+    data = dict(response)
+    data["query"] = query
     with open(path, "a", encoding="utf8") as jfile:
-        jfile.write(dumps(response, ensure_ascii=False) + "\n")
+        jfile.write(dumps(data, ensure_ascii=False) + "\n")
 
 
 # load configuration variables
@@ -80,7 +86,7 @@ query_engine = index.as_query_engine()
 
 
 @app.post("/query/")
-def retrieve(query: str) -> dict:
+def retrieve(query: Query) -> dict:
     """Run a query with the RAG pipeline.
 
     Parameters
@@ -94,9 +100,10 @@ def retrieve(query: str) -> dict:
         Dictionary containing the answer given by the LLM and the relevant
         documents.
     """
+    query = query.query
     global query_engine
     response = query_engine.query(query)
-    result = {"response": response}
+    result = {"response": response.response}
 
     source_files = []
     for source_node in response.source_nodes:
