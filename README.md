@@ -1,12 +1,12 @@
 # Docuchat
 
-**By:** Nicolas Rojas
+**By: Nicolas Rojas**
 
 Documentation-based RAG pipeline.
 
 This repository contains the source code to build a RAG application that allows questioning a chatbot about internal documentation, using LlamaIndex and Ollama with locally-deployed large language models.
 
-## Quickstart
+## Installation
 
 Run the following command to install the dependencies:
 
