@@ -1,5 +1,5 @@
 index_directory: "./rag_index"
-chunk_size: 1024
+chunk_size: 512
 embedding_model: "thenlper/gte-large"
 ollama_model: "mixtral"
 chroma_collection: "sagemaker_docs"
