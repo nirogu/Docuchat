@@ -9,6 +9,7 @@ Nicolas Rojas
 # import libraries
 import os.path
 import yaml
+from json import dumps
 from fastapi import FastAPI
 from llama_index.core import (
     StorageContext,
@@ -20,6 +21,24 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.llms.ollama import Ollama
 from database_handler import create_index
 
+
+def save_query(path: str, query: str, response: dict):
+    """Save query in persistent jsonl file.
+
+    Parameters
+    ----------
+    path : str
+        Path to the jsonl file where the query history is saved.
+    query : str
+        Query received by the RAG system.
+    response : dict
+        Dictionary with the response and relevant documents.
+    """
+    response["query"] = query
+    with open(path, "a", encoding="utf8") as jfile:
+        jfile.write(dumps(response, ensure_ascii=False)+"\n")
+
+
 # load configuration variables
 with open("config.yaml", "r", encoding="utf8") as yfile:
     parameters = yaml.safe_load(yfile)
@@ -30,6 +49,7 @@ embedding_model = parameters["embedding_model"]
 ollama_model = parameters["ollama_model"]
 chroma_collection = parameters["chroma_collection"]
 documents_dir = parameters["documents_dir"]
+query_history = parameters["query_history"]
 
 # Set custom RAG settings
 Settings.chunk_size = chunk_size
@@ -76,4 +96,5 @@ def retrieve(query: str) -> dict:
     source_files = list(set(source_files))
     result["source_files"] = source files
 
+    save_query(query_history, query, result)
     return result
