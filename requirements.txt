@@ -4,3 +4,5 @@ llama-index-llms-ollama == 0.3.1
 llama-index-embeddings-huggingface == 0.3.1
 llama-index-vector-stores-chroma == 0.2.0
 fastapi>=0.68.0
+uvicorn>=0.15.0
+gradio==4.26.0
