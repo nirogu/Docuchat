@@ -11,7 +11,9 @@ import os.path
 import yaml
 from json import dumps
 from fastapi import FastAPI
+import chromadb
 from llama_index.core import (
+    VectorStoreIndex,
     StorageContext,
     load_index_from_storage,
     Settings,
@@ -59,13 +61,19 @@ Settings.llm = Ollama(model=ollama_model, request_timeout=360.0)
 # initiate FastAPI app
 app = FastAPI()
 
+# check if stored index already exists
 if not os.path.exists(index_dir):
-    # check if stored index already exists
     create_index(chroma_collection, documents_dir)
-else:
-    # load the existing index
-    storage_context = StorageContext.from_defaults(persist_dir=index_dir)
-    index = load_index_from_storage(storage_context)
+
+# load the existing index
+chroma_client = chromadb.PersistentClient(path=index_dir)
+chroma_collection = chroma_client.get_or_create_collection(chroma_collection)
+vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+embed_model = HuggingFaceEmbedding(model_name=embedding_model)
+index = VectorStoreIndex.from_vector_store(
+    vector_store,
+    embed_model=embed_model,
+)
 
 # define the index
 query_engine = index.as_query_engine()

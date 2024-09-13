@@ -23,7 +23,10 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 
 
 def create_index(
-    chroma_collection_name: str, documents_dir: str, index_dir: str
+    chroma_collection_name: str,
+    documents_dir: str,
+    index_dir: str,
+    embedding_model: str,
 ):
     """Create vector database from documents folder.
 
@@ -35,9 +38,11 @@ def create_index(
         Directory where the documents are stored.
     index_dir : str
         Directory where the index is saved.
+    embedding_model : str
+        Huggingface embedding model to vectorize the documents.
     """
     # create Chroma vector store
-    chroma_client = chromadb.PersistentClient()
+    chroma_client = chromadb.PersistentClient(path=index_dir)
     chroma_collection = chroma_client.get_or_create_collection(
         chroma_collection_name
     )
@@ -45,15 +50,14 @@ def create_index(
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # load the documents and create the index
+    embed_model = HuggingFaceEmbedding(model_name=embedding_model)
     documents = SimpleDirectoryReader(documents_dir).load_data()
     index = VectorStoreIndex.from_documents(
-        documents, storage_context=storage_context
+        documents, storage_context=storage_context, embed_model=embed_model
     )
-    # store the index
-    index.storage_context.persist(persist_dir=index_dir)
 
 
-def update_index(documents_dir: str, index_dir: str):
+def update_index(documents_dir: str, index_dir: str, embedding_model: str):
     """Update vector database with new or changed files.
 
     Parameters
@@ -62,10 +66,20 @@ def update_index(documents_dir: str, index_dir: str):
         Directory where the documents are stored.
     index_dir : str
         Directory where the index is saved.
+    embedding_model : str
+        Huggingface embedding model to vectorize the documents.
     """
     # load the existing index
-    storage_context = StorageContext.from_defaults(persist_dir=index_dir)
-    index = load_index_from_storage(storage_context)
+    chroma_client = chromadb.PersistentClient(path=index_dir)
+    chroma_collection = chroma_client.get_or_create_collection(
+        chroma_collection_name
+    )
+    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    embed_model = HuggingFaceEmbedding(model_name=embedding_model)
+    index = VectorStoreIndex.from_vector_store(
+        vector_store,
+        embed_model=embed_model,
+    )
     documents = SimpleDirectoryReader(documents_dir).load_data()
 
     for doc in documents:
@@ -125,10 +139,12 @@ if __name__ == "__main__":
     if args.create:
         if os.path.exists(index_dir):
             raise FileExistsError(f"The file {index_dir} already exists")
-        create_index(chroma_collection, documents_dir, index_dir)
+        create_index(
+            chroma_collection, documents_dir, index_dir, embedding_model
+        )
 
     # update existing database
     elif args.update:
         if not os.path.exists(index_dir):
             raise FileNotFoundError(f"The file {index_dir} does not exist")
-        update_index(documents_dir, index_dir)
+        update_index(documents_dir, index_dir, embedding_model)
