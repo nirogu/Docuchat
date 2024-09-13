@@ -6,9 +6,10 @@ Author
 Nicolas Rojas
 """
 
+import requests
 import gradio as gr
 
-API_URL = "http://localhost:8000"
+API_URL = "http://localhost:8000/query/"
 
 
 def query_model(text: str) -> str:
@@ -18,7 +19,12 @@ def query_model(text: str) -> str:
 
         # Check if the request was successful
         if response.status_code == 200:
-            return response.json()["result"]
+            result = response.json()["response"]
+            result += (
+                "\nThis information was obtained from the following files:\n"
+            )
+            for source in response.json()["source_files"]:
+                result += f"- {source}\n"
         else:
             return f"Error: API returned status code {response.status_code}"
     except requests.RequestException as e:
