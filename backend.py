@@ -9,10 +9,7 @@ Nicolas Rojas
 # import libraries
 import os.path
 import yaml
-import chromadb
 from llama_index.core import (
-    VectorStoreIndex,
-    SimpleDirectoryReader,
     StorageContext,
     load_index_from_storage,
     Settings,
@@ -39,18 +36,8 @@ Settings.llm = Ollama(model=ollama_model, request_timeout=360.0)
 
 # check if stored index already exists
 if not os.path.exists(index_dir):
-    # create Chroma vector store
-    chroma_client = chromadb.PersistentClient()
-    chroma_collection = chroma_client.create_collection(chroma_collection)
-    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    # load the documents and create the index
-    documents = SimpleDirectoryReader(documents_dir).load_data()
-    index = VectorStoreIndex.from_documents(
-        documents, storage_context=storage_context
-    )
-    # store the index
-    index.storage_context.persist(persist_dir=index_dir)
+    # check if stored index already exists
+    create_index(chroma_collection, documents_dir)
 else:
     # load the existing index
     storage_context = StorageContext.from_defaults(persist_dir=index_dir)
