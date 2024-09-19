@@ -13,6 +13,18 @@ API_URL = "http://localhost:8000/query/"
 
 
 def query_model(text: str) -> str:
+    """Query the RAG system through its API.
+
+    Parameters
+    ----------
+    text : str
+        Question or query made by the user.
+
+    Returns
+    -------
+    str
+        Response given by the API as a single string, or error logs when found.
+    """
     try:
         # Send a POST request to the API
         response = requests.post(API_URL, json={"query": text}, timeout=30)

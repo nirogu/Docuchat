@@ -8,15 +8,13 @@ Nicolas Rojas
 
 # import libraries
 import os.path
-import yaml
 from json import dumps
+import yaml
 from pydantic import BaseModel
 from fastapi import FastAPI
 import chromadb
 from llama_index.core import (
     VectorStoreIndex,
-    StorageContext,
-    load_index_from_storage,
     Settings,
 )
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
@@ -26,6 +24,8 @@ from database_handler import create_index
 
 
 class Query(BaseModel):
+    """RestAPI input structure."""
+
     query: str
 
 

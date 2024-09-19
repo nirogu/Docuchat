@@ -43,9 +43,7 @@ def create_index(
     """
     # create Chroma vector store
     chroma_client = chromadb.PersistentClient(path=index_dir)
-    chroma_collection = chroma_client.get_or_create_collection(
-        chroma_collection_name
-    )
+    chroma_collection = chroma_client.get_or_create_collection(chroma_collection_name)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
@@ -78,9 +76,7 @@ def update_index(
     """
     # load the existing index
     chroma_client = chromadb.PersistentClient(path=index_dir)
-    chroma_collection = chroma_client.get_or_create_collection(
-        chroma_collection_name
-    )
+    chroma_collection = chroma_client.get_or_create_collection(chroma_collection_name)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     embed_model = HuggingFaceEmbedding(model_name=embedding_model)
     index = VectorStoreIndex.from_vector_store(
@@ -146,9 +142,7 @@ if __name__ == "__main__":
     if args.create:
         if os.path.exists(index_dir):
             raise FileExistsError(f"The file {index_dir} already exists")
-        create_index(
-            chroma_collection, documents_dir, index_dir, embedding_model
-        )
+        create_index(chroma_collection, documents_dir, index_dir, embedding_model)
 
     # update existing database
     elif args.update:
