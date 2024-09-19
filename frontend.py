@@ -15,18 +15,16 @@ API_URL = "http://localhost:8000/query/"
 def query_model(text: str) -> str:
     try:
         # Send a POST request to the API
-        response = requests.post(API_URL, json={"query": text})
+        response = requests.post(API_URL, json={"query": text}, timeout=30)
 
-        # Check if the request was successful
-        if response.status_code == 200:
-            result = response.json()["response"]
-            result += (
-                "\nThis information was obtained from the following files:\n"
-            )
-            for source in response.json()["source_files"]:
-                result += f"- {source}\n"
-        else:
+        # Check whether the request was successful
+        if response.status_code != 200:
             return f"Error: API returned status code {response.status_code}"
+        result = response.json()["response"]
+        result += "\nThis information was obtained from the following files:\n"
+        for source in response.json()["source_files"]:
+            result += f"- {source}\n"
+        return result
     except requests.RequestException as e:
         return f"Error: Could not connect to the API. {str(e)}"
 

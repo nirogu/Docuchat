@@ -69,7 +69,7 @@ app = FastAPI()
 
 # check if stored index already exists
 if not os.path.exists(index_dir):
-    create_index(chroma_collection, documents_dir)
+    create_index(chroma_collection, documents_dir, index_dir, embedding_model)
 
 # load the existing index
 chroma_client = chromadb.PersistentClient(path=index_dir)

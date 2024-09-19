@@ -57,11 +57,18 @@ def create_index(
     )
 
 
-def update_index(documents_dir: str, index_dir: str, embedding_model: str):
+def update_index(
+    chroma_collection_name: str,
+    documents_dir: str,
+    index_dir: str,
+    embedding_model: str,
+):
     """Update vector database with new or changed files.
 
     Parameters
     ----------
+    chroma_collection_name : str
+        Name of the Chroma collection to be updated.
     documents_dir : str
         Directory where the documents are stored.
     index_dir : str
@@ -92,7 +99,7 @@ def update_index(documents_dir: str, index_dir: str, embedding_model: str):
             existing_mtime = datetime.fromisoformat(
                 existing_node.metadata["last_modified"]
             )
-            current_mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
+            current_mtime = datetime.fromtimestamp(os.path.getmtime(doc_id))
 
             # If the file has been modified, update it
             if current_mtime > existing_mtime:
@@ -147,4 +154,4 @@ if __name__ == "__main__":
     elif args.update:
         if not os.path.exists(index_dir):
             raise FileNotFoundError(f"The file {index_dir} does not exist")
-        update_index(documents_dir, index_dir, embedding_model)
+        update_index(chroma_collection, documents_dir, index_dir, embedding_model)
