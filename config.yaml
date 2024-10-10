@@ -1,7 +1,7 @@
-index_directory: "./rag_index"
+index_directory: ".rag_index"
 chunk_size: 512
 embedding_model: "thenlper/gte-large"
 ollama_model: "mixtral"
-chroma_collection: "sagemaker_docs"
-documents_dir: "sagemaker_documentation"
+chroma_collection: "documents_chroma_db"
+documents_dir: "documents"
 query_history: "queries_database.jsonl"
